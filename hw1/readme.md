@@ -1,28 +1,3 @@
----
-tags: DB
----
-<style>
-    H1{
-        text-align: center;  /* 題目置中 */
-    }
-    H4{
-        text-align: right;  /* 題目置中 */
-    }
-    blockquote > P {    /* Blockquote 取消第一行兩格*/
-        text-indent: 0;
-    }
-    .markdown-body > h4 {   /* 讓限制那行離上面近一點 */
-        padding: 0;
-        margin: 0;
-    }
-    .markdown-body > h1 {
-        border-bottom: 0;
-        padding: 0;
-
-    }
-</style>
-
-
 # HW1 Report
 #### 409410050 資工二 王謙靜
 ## MYSQL
@@ -66,9 +41,10 @@ tags: DB
     ('d11222', '任賢齊專輯三', 300, 'CD');
     ```
 4. 以下為此過程的截圖
+
 ![](https://i.imgur.com/cXeu1cb.png)
 
-    ![](https://i.imgur.com/HZyY2zH.png)
+![](https://i.imgur.com/HZyY2zH.png)
 ### 顯示各table的完整內容/每筆資料
 輸入指令來檢查目前table的資料
 
@@ -77,17 +53,26 @@ SELECT * FROM db_name.table_name;
 ```
 
 **product:**
+
 ![](https://i.imgur.com/SaQ7HmR.png)
+
 **record:**
+
 ![](https://i.imgur.com/4dWdS3u.png)
+
 
 ###  MySQL查詢結果的完整截圖
 查詢1：找出定價400元以下所有CD。列出商品名稱、定價。
-    ![](https://i.imgur.com/sTBsUzj.png)
+    
+![](https://i.imgur.com/sTBsUzj.png)
+    
 查詢2：找出所有定價比所有書籍都高的商品。
-    ![](https://i.imgur.com/VzTXG1v.png)
+    
+![](https://i.imgur.com/VzTXG1v.png)
+
 查詢3：找出最優惠的交易記錄。列出交易編號、該筆交易得到的優惠金額。
-    ![](https://i.imgur.com/zbgPIGD.png)
+
+![](https://i.imgur.com/zbgPIGD.png)
 
 
 ## MongoDB
@@ -96,6 +81,7 @@ SELECT * FROM db_name.table_name;
 2. 輸入 `use db_name`，選擇使用的database名稱，若db_name不存在則會新增一個database
 3. 使用指令 `show dbs` 檢查是否成功新增(若database還沒有任何操作，則指令 `show dbs` 出現的結果將不會有該database，可在有insert之後查看是否有新增database)
 4. 以下為此過程的截圖
+
 ![](https://i.imgur.com/2e2qlnG.png)
 
 ### 如何建立 MongoDB table
@@ -113,9 +99,11 @@ db.table_name.insertMany([
 ])
 ```
 **Product**
+
 ![](https://i.imgur.com/tpT7Mwu.png)
 
 **Record**
+
 ![](https://i.imgur.com/iTaaeqm.png)
 
 
@@ -130,20 +118,28 @@ show collections
 ```sql
 db.table_name.find()
 ```
+
 ![](https://i.imgur.com/J5mnFCo.png)
 
 ### MongoDB查詢結果
 查詢1：找出定價400元以下所有CD。列出商品名稱、定價。
+
 ![](https://i.imgur.com/L7jS10C.png)
+
 查詢2：找出所有定價比所有書籍都高的商品。
+
 ![](https://i.imgur.com/tWgQvhg.png)
+
 查詢3：找出最優惠的交易記錄。列出交易編號、該筆交易得到的優惠金額。
+
 ![](https://i.imgur.com/7Y6deYb.png)
 
 
 ## 狀況排解
 ### 中文字產生'?'
+
 ![問題1-2](https://i.imgur.com/ul2TOo9.png)
+
 **解決:**
 在CMD輸入指令，將CMD輸入時的中文編碼從```Big5```改成```utf-8```
 ```
