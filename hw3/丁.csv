@@ -1,0 +1,13 @@
+﻿Earthquake,,,,,,,Damage,,,,,Cities,,,,
+qname,qdate,latitude,longitude,magnitude,fault,,cityID,qname,cost,liveslost,,cID,cname,latitude,longitude,population
+Huawei,1989-09-12,40.13N,80.34W,3.2,Detroit,,3,Hengshui,200000,20,,1,Taipei,23.59N,120.43E,150000
+Hengshui,1955-04-03,60.72S,22.28E,7.2,Gaoyao,,1,Handan,300000,46,,2,London,30.89N,10.12E,200000
+Handan,1956-07-07,61.44S,23.51E,7.3,Gaoyao,,5,Cangzhou,400000,51,,3,Syden,35.67S,130.56E,250000
+Cangzhou,1966-04-04,63.21S,21.71E,7.1,Gaoyao,,8,Changzhi                   ,250000,48,,4,Detroit,40.13N,80.34W,300000
+Changzhi                   ,1988-04-05,61.78S,25.17E,6.5,Gaoyao,,11,Jincheng,100000,12,,5,Belin,60.75N,30.31E,350000
+Jincheng,1944-03-03,62.19S,25.46E,2.5,Jieyang,,2,Pingyao,110000,43,,6,Java,13.92N,90.24E,400000
+Pingyao,1948-06-07,61.61S,27.28E,7.7,Jieyang,,5,Changzhi                   ,280000,46,,7,San diago,34.56N,120.43E,450000
+,,,,,,,4,Huawei,320000,34,,8,San,27.56N,3.43E,550000
+,,,,,,,,,,,,9,Hesan,63.12S,23.48E,300000
+,,,,,,,,,,,,10,Qionghai,61.87S,24.42E,500000
+,,,,,,,,,,,,11,Wuxi,60.06S,25.17E,750000

@@ -1,0 +1,456 @@
+insert into Authors
+values ("Bella", 1000, null, "Taiwan");
+
+
+SELECT push.pid, push.pname, sale
+FROM	Publishers push, Publications pution, Selling sell
+WHERE	push.pid = pution.pid and sell.ISBN = pution.ISBN and pushA.pid in (SELECT 	pushA.pid, SUM(sell.quantity) as sale
+FROM 	Publishers pushA, Publications putionA, Selling   sellA
+WHERE	pushA.pid = putionA.pid and sellA.ISBN = putionA.ISBN
+GROUP BY pushA.pid
+);
+
+SELECT	temp.pid, temp.pname, temp.sale, pution2.ISBN, pution2.title
+FROM	(SELECT   push.pid, push.pname, SUM(sell.quantity) as sale, pution.ISBN
+	 FROM     Publishers push, Publications pution, Selling   sell
+	 WHERE    push.pid = pution.pid and sell.ISBN = pution.ISBN
+	 GROUP BY push.pid) as temp, Publications pution2
+WHERE	pution2.pid = temp.pid;
+
+
+SELECT	tmp.pid, tmp.title, tmp.sale
+FROM	()
+
+SELECT tmp4.title, publisher1.pname
+FROM  Publishers publisher1 NATURAL LEFT OUTER JOIN
+      (SELECT tmp3.title, tmp3.pid
+       FROM	(SELECT tmp.pid, MAX(sale) as max_sale
+	         FROM	(SELECT   pushA.pid, SUM(sellA.quantity) as sale
+		         FROM     Publishers pushA, Publications putionA, Selling   sellA
+		         WHERE    putionA.pdate >= "2000-01-01" AND pushA.pid = putionA.pid and sellA.ISBN = putionA.ISBN
+		         GROUP BY putionA.ISBN) as tmp
+	         GROUP BY tmp.pid) as tmp2, 
+	         (SELECT   pushA.pid, pushA.pname, SUM(sellA.quantity) as sale, putionA.title
+		  FROM     Publishers pushA, Publications putionA, Selling   sellA
+		  WHERE    putionA.pdate >= "2000-01-01" AND pushA.pid = putionA.pid and sellA.ISBN = putionA.ISBN
+		  GROUP BY putionA.ISBN) as tmp3
+       WHERE	tmp2.max_sale = tmp3.sale and tmp2.pid = tmp3.pid) as tmp4
+ORDER BY tmp4.title, publisher1.pname;
+
+
+SELECT	tmp2.category, pution.title, tmp2.max_sale
+FROM	(SELECT	putionA.category, MAX(tmp.sale) as max_sale
+	FROM	(SELECT	sellA.ISBN, SUM(sellA.quantity) as sale
+		FROM	Selling sellA
+		GROUP BY sellA.ISBN) as tmp, Publications putionA
+	WHERE	putionA.ISBN = tmp.ISBN
+	GROUP BY putionA.category) as tmp2,
+	(SELECT	sellA.ISBN, SUM(sellA.quantity) as sale
+	 FROM	Selling sellA
+	 GROUP BY sellA.ISBN) as tmp3, Publications pution
+WHERE 	tmp3.sale = tmp2.max_sale and tmp3.ISBN = pution.ISBN
+	and tmp2.category = pution.category
+ORDER BY tmp2.category, pution.title, tmp2.max_sale;
+
+SELECT	pution.title
+FROM	Publications pution
+WHERE	pution.category = "technology" and pution.pdate >= '2000-01-01'
+	and pution.ISBN not in 	(SELECT pubAuthor.ISBN
+				 FROM	PubAuthors pubAuthor, Authors author
+				 WHERE	pubAuthor.aname = author.aname and author.age >=50)
+ORDER BY pution.title;
+
+CREATE TABLE Earthquake(
+	qname		varchar(25) PRIMARY KEY NOT NULL,
+	qdate		date	NOT NULL,
+	latitude	varchar(25)	NOT NULL,
+	longitude	varchar(25)	NOT NULL,
+	magnitude	double		NOT NULL,
+	fault		varchar(50)
+);
+
+CREATE TABLE Cities(
+	cID		int PRIMARY KEY NOT NULL,
+	cname		varchar(25)	NOT NULL,
+	latitude	varchar(25)	NOT NULL,
+	longitude	varchar(25)	NOT NULL,
+	population	int
+);
+
+CREATE TABLE Damage(
+	cityID		int NOT NULL,
+	qname		varchar(25) NOT NULL,
+	cost		int,
+	liveslost	int,
+	PRIMARY KEY(cityID, qname),
+	CONSTRAINT damage_city_fk FOREIGN KEY(cityID)
+	REFERENCES Cities(cID),
+	CONSTRAINT damage_qname_fk FOREIGN KEY(qname)
+	REFERENCES Earthquake(qname)
+);
+
+
+INSERT INTO Earthquake (qname,qdate,latitude,longitude,magnitude,fault)
+VALUES  ("Huawei",  "1989-09-12", "40.13N", "80.34W",3.2, "Detroit"),
+	("Hengshui","1955-04-03", "60.72S", "22.28E",7.2, "Gaoyao"),
+	("Handan",  "1956-07-07", "61.44S", "23.51E",7.3, "Gaoyao"),
+	("Cangzhou","1966-04-04", "63.21S", "21.71E",7.1, "Gaoyao"),
+	("Changzhi","1988-04-05", "61.78S", "25.17E",6.5, "Gaoyao"),
+	("Jincheng","1944-03-03", "62.19S", "25.46E",2.5, "Jieyang"),
+	("Pingyao", "1948-06-07", "61.61S", "27.28E",7.7, "Jieyang");
+
+INSERT INTO Damage (cityID,qname,cost,liveslost)
+VALUES	(3, 'Hengshui', 200000, 20),
+	(1, 'Handan', 300000, 46),
+	(5, 'Cangzhou', 400000, 51),
+	(8, 'Changzhi', 250000, 48),
+	(11, 'Jincheng', 100000, 12),
+	(2, 'Pingyao', 110000, 43),
+	(5, 'Changzhi', 280000, 46),
+	(4, 'Huawei', 320000, 34);
+
+INSERT INTO Cities (cID,cname,latitude,longitude,population)
+VALUES
+	(1, 'Taipei',	'23.59N', '120.43E',150000),
+	(2, 'London',	'30.89N', '10.12E', 200000),
+	(3, 'Syden', 	'35.67S', '130.56E',250000),
+	(4, 'Detroit',	'40.13N', '80.34W', 300000),
+	(5, 'Belin',  	'60.75N', '30.31E', 350000),
+	(6, 'Java',   	'13.92N', '90.24E', 400000),
+	(7, 'San diago','34.56N', '120.43E',450000),
+	(8, 'San',	'27.56N', '3.43E',  550000),
+	(9, 'Hesan', 	'63.12S', '23.48E', 300000),
+	(10, 'Qionghai','61.87S', '24.42E', 500000),
+	(11, 'Wuxi', 	'60.06S', '25.17E', 750000);
+
+SELECT	eq.qname, eq.qdate
+FROM	Earthquake eq
+WHERE	eq.magnitude > 7.0;
+
+SELECT	AVG(city.population)
+FROM	Cities city
+WHERE	city.cname LIKE 'San%';
+
+SELECT	damage.liveslost, damage.qname, city.cname
+FROM	Cities city, Damage, Earthquake eq
+WHERE	city.cID = damage.cityID AND eq.qname = damage.qname
+	AND eq.qdate < '1960-01-01';
+
+SELECT	city.cid, SUM(tmp.cost) as total_cost
+FROM	(SELECT damage.cityID as cid, damage.cost
+	 FROM Earthquake eq, damage
+	 WHERE	eq.magnitude > 7.0 and eq.qname = damage.qname) as tmp 
+	NATURAL RIGHT OUTER JOIN Cities city
+GROUP BY city.cid;
+
+
+
+SELECT	eq.fault, AVG(eq.magnitude)
+FROM 	Earthquake eq
+GROUP BY eq.fault;
+
+SELECT 	city.cname
+FROM 	Cities city
+WHERE 	city.population > (SELECT AVG(city2.population)
+			   FROM Cities city2);
+
+SELECT 	eq.qname, damage.cityID, damage.liveslost
+FROM 	Earthquake eq NATURAL LEFT OUTER JOIN damage;
+
+insert into earthquake(qname, qdate, latitude, 
+			longitude, magnitude, fault)
+values("hahaha", '2002-04-17', '88.7N', '1001.3W', 8.5, null);
+
+
+丁6錯誤版
+SELECT 	eq.qname, tmp.cityID, tmp.total_liveslost
+FROM 	Earthquake eq NATURAL LEFT OUTER JOIN 
+        (SELECT   damage.cityID, damage.qname,
+         SUM(damage.liveslost)as total_liveslost
+         FROM     Damage, Cities city
+         WHERE    city.cID = damage.cityID   
+         GROUP BY city.cID) as tmp;
+
+
+insert into donations(recipientname, donorOrganization, organizationtype, amount)
+values  ("Alice", "CCU", "tobacco", 1000),
+	("Alice", "NCKU", "school", null);
+
+insert into donations(recipientname, donorOrganization, organizationtype, amount)
+values ("Campbell", "CCU", "tobacco", 1000);
+
+select *
+from donations A
+where not exists
+    (select B.donorOrganization from donations B
+    where recipientName = "Campbell"
+    and A.donorOrganization != B.donorOrganization);
+
+select distinct A.recipientName
+from donations A
+where not exists
+    (select donorOrganization from donations
+    where recipientName = "Campbell"
+    and donations.donorOrganization not in (select donorOrganization from donations B1
+    where B1.recipientName != A.recipientName));
+
+select *
+from donations A, (select donorOrganization from donations B1
+    where B1.recipientName != A.recipientName) as tmp;
+
+select distinct A.recipientName
+from donations A, donations B
+where A.amount >= 1000
+      and A.recipientName = B.recipientName
+      and A.donorOrganization != B.donorOrganization
+
+select distinct A.recipientName
+from donations A
+where amount >= 1000
+group by A.recipientName
+having count(donorOrganization) >= 2;
+
+
+
+
+CREATE TABLE Manufacturer(
+	maker varchar(25) PRIMARY KEY	NOT NULL
+);
+
+CREATE TABLE PC(
+	model 	varchar(25) PRIMARY KEY	NOT NULL,
+	speed	float			NOT NULL,
+	ram	varchar(10)		NOT NULL,
+	hd	varchar(10)		NOT NULL,
+	price	int			NOT NULL
+);
+
+CREATE TABLE Laptop(
+	model 	varchar(25) PRIMARY KEY	NOT NULL,
+	speed	float			NOT NULL,
+	ram	varchar(10)		NOT NULL,
+	hd	varchar(10)		NOT NULL,
+	screen	int			NOT NULL,
+	price	int			NOT NULL
+);
+
+CREATE TABLE Printer(
+	model 	varchar(25) PRIMARY KEY	NOT NULL,
+	color	varchar(25)		NOT NULL,
+	type	varchar(25)		NOT NULL,
+	price	int			NOT NULL
+);
+
+CREATE TABLE Product(
+	maker 	varchar(25)	NOT NULL,
+	model	varchar(25)	NOT NULL,
+	type	varchar(25),
+	PRIMARY KEY(maker, model),
+	CONSTRAINT product_maker_fk FOREIGN KEY(maker)
+	REFERENCES Manufacturer(maker),
+	CHECK ((model in (SELECT PC.model FROM PC) UNIION
+		       (SELECT Laptop.model FROM Laptop) UNION
+		       (SELECT Printer.model FROM Printer))
+);
+
+SELECT	DISTINCT pd.maker
+FROM	Product pd
+WHERE	pd.model in (SELECT PC.model
+		     FROM  PC
+		     WHERE PC.speed >=3.0);
+
+SELECT *
+FROM  Laptop
+WHERE Laptop.speed < (SELECT MIN(PC.speed)
+                       FROM   PC);
+
+
+己0.
+CREATE TABLE Actor(
+	pid int	PRIMARY KEY NOT NULL,
+	fname varchar(25)   NOT NULL,
+	lname varchar(25)   NOT NULL,
+	gender varchar(25)
+);
+
+CREATE TABLE Movie(
+	mid int	PRIMARY KEY NOT NULL,
+	name varchar(25)    NOT NULL,
+	year int            NOT NULL,
+	revenue int         NOT NULL
+);
+
+CREATE TABLE Directors(
+	did int	PRIMARY KEY NOT NULL,
+	fname varchar(25)   NOT NULL,
+	lname varchar(25)   NOT NULL,
+);
+
+CREATE TABLE Casts(
+	pid int NOT NULL,
+	mid int NOT NULL,
+	role varchar(25) NOT NULL,
+	PRIMARY KEY(pid, mid, role),
+	CONSTRAINT actor_pid_fk FOREIGN KEY(pid)
+	REFERENCES Actor(pid),
+	CONSTRAINT movie_mid_fk FOREIGN KEY(mid)
+	REFERENCES Movie(mid)
+);
+
+CREATE TABLE Movie_directors(
+	did int NOT NULL,
+	mid int NOT NULL,
+	PRIMARY KEY(pid, did),
+	CONSTRAINT directors_did_fk FOREIGN KEY(did)
+	REFERENCES Directors(did),
+	CONSTRAINT movie_mid_fk FOREIGN KEY(mid)
+	REFERENCES Movie(mid)
+);
+
+己1.
+SELECT d.fname, d.lname, COUNT(m.mid) as number
+FROM   Directors d, Movie_directors md, Movie m
+WHERE  d.did = md.did and m.mid = md.mid
+GROUP BY d.did
+HAVING COUNT(m.mid) > 200;
+
+己2.
+
+SELECT mov.year, COUNT(tmp.mid)
+FROM   Movie mov NATURAL LEFT OUTER JOIN 
+       (SELECT m.mid
+	FROM   Movie m
+	WHERE  m.mid not in (SELECT cast.mid
+        	             FROM   Casts cast, Actor a
+                	     WHERE cast.pid = a.pid and a.gender != 'female')
+	) as tmp
+GROUP BY mov.year
+ORDER BY mov.year;
+
+SELECT *
+FROM   Casts cast, Actor a
+WHERE cast.pid = a.pid and a.gender != 'female';
+
+
+戊0
+
+create table model_table(
+	model varchar(25) PRIMARY KEY NOT NULL
+);
+
+ALTER TABLE PC
+ADD FOREIGN KEY(model)
+REFERENCES model_table(model);
+
+ALTER TABLE Laptop
+ADD FOREIGN KEY(model)
+REFERENCES model_table(model);
+
+ALTER TABLE Printer
+ADD FOREIGN KEY(model)
+REFERENCES model_table(model);
+
+ALTER TABLE product
+ADD FOREIGN KEY(model)
+REFERENCES model_table(model);
+
+
+CREATE TRIGGER product_insert_check
+       BEFORE INSERT ON product
+FOR EACH ROW
+	DELETE FROM  model_table m
+	      WHERE  m.model not in
+                     ((select pc.model from pc) union
+		      (select lp.model from laptop lp) union
+                      (select pt.model from printer pt));
+
+CREATE TRIGGER product_update_check
+       BEFORE UPDATE ON product
+FOR EACH ROW
+	DELETE FROM  model_table m
+	      WHERE  m.model not in
+                     ((select pc.model from pc) union
+		      (select lp.model from laptop lp) union
+                      (select pt.model from printer pt));
+
+CREATE TRIGGER model_delete_check
+       AFTER DELETE ON PC, laptop, printer
+FOR EACH ROW
+       DELETE FROM  product p 
+	      WHERE  p.model not in
+                     ((select pc.model from pc) union
+		      (select lp.model from laptop lp) union
+                      (select pt.model from printer pt));
+  
+
+DELIMETER $$
+CREATE TRIGGER product_insert_check
+       AFTER INSERT ON product
+FOR EACH ROW
+BEGIN
+	IF	new.type = "pc"
+		INSERT IGNORE INTO  PC(model,  speed, ram, hd, price)
+		values(new.model, null, null, null, null);
+	ENDIF;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER product_insert_add
+       AFTER INSERT ON product
+FOR EACH ROW
+BEGIN
+	IF	new.type = "pc" THEN
+		INSERT IGNORE INTO  PC(model,  speed, ram, hd, price)
+		VALUES (new.model, null, null, null, null);
+	END IF;
+	IF	new.type ="laptop" THEN
+		INSERT IGNORE INTO  Laptop (model,speed,ram,hd,screen,price)
+		VALUES (new.model, null, null, null, null, null);
+	END IF;
+	IF	new.type ="printer" THEN
+		INSERT IGNORE INTO  Printer (model,color,type,price)
+		VALUES (new.model, null, null, null);
+	END IF;
+END$$
+DELIMITER ;
+
+VALUES ('LG', 'a3333', 'pc');
+
+WHERE  m.model not in
+                     ((select pc.model from pc) union
+		      (select lp.model from laptop lp) union
+                      (select pt.model from printer pt));
+END$$
+
+
+
+
+
+INSERT INTO model_table (model)
+
+VALUES
+    ('a2255'),
+    ('a2233'), 
+    ('a2234'), 
+    ('a2236'),
+    ('a2237'),
+    ('b7711'), ('v1122'),
+    ('b7722'), ('v1133'),
+    ('b7733'), ('v1144'),
+    ('b7744'), ('v1155'),
+    ('b7755'), ('v1166');
+
+
+CREATE TABLE SANDWICHES(
+	Location	varchar(50)	NOT NULL,
+	Bread		varchar(15)	NOT NULL,
+	Filling		varchar(30)	NOT NULL,
+	Price		double,
+	PRIMARY KEY(Location, Bread, Filling),
+	Constraint Locations_sandwiches_fk FOREIGN KEY(Location)
+	REFERENCES LOCATIONS(LName)
+);
+
+
+

@@ -1,0 +1,16 @@
+﻿Actor,,,,,Movie,,,,,Directors,,,,Casts,,,,Movie_directors,
+pid,fname,lname,gender,,mid,name,year,revenue,,did,fname,lname,,pid,mid,role,,did,mid
+1,David,Smith,male,,1,The Shawshank Redemption,1994,5830,,1,Frank,Darabont,,3,7,maid,,1,1
+2,John,Eveland,male,,2,Blade Runner,1982,3380,,2,Ridley,Scott,,2,2,teacher,,2,2
+3,Karen,Wang,female,,3,Interstellar,2014,28500,,3,Christopher,Nolan,,2,11,boss,,3,3
+4,Jessica,Brown,female,,4,TENET,2020,36300,,4,Kenneth,Branagh,,4,3,teacher,,3,8
+5,Wendy,Lee,female,,5,Death on the Nile,2020,32600,,5,Steven,Spielberg,,5,8,child,,5,5
+6,Jack,Chen,male,,6,Cute,2001,11000,,,,,,6,2,aftreet,,4,10
+7,Yoyo,Lee,transgender,,7,Sunshine,2001,12000,,,,,,7,6,child,,3,4
+8,Lamba,Chen,female,,8,Verycute,2003,18000,,,,,,1,5,teacher,,4,2
+9,Susu,Chen,female,,9,Sohot,2004,20000,,,,,,9,10,boss,,3,6
+10,Yang,Lee,male,,10,Bad,2006,21200,,,,,,8,1,teacher,,4,7
+11,Jennie,Wang,transgender,,11,Scare,2007,23600,,,,,,11,5,teacher,,2,4
+,,,,,,,,,,,,,,7,2,child,,5,9
+,,,,,,,,,,,,,,10,11,employee,,1,11
+,,,,,,,,,,,,,,8,3,maid,,5,1

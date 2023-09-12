@@ -1,0 +1,376 @@
+甲0
+create table A(
+	i int NOT NULL,
+	j int NOT NULL,
+	v int NOT NULL,
+	primary key(i, j),
+	check(i > 0 and j > 0)
+);
+
+create table B(
+	j int NOT NULL,
+	k int NOT NULL,
+	v int NOT NULL,
+	primary key(j, k),
+	check(j > 0 and k > 0)
+);
+
+insert into A (i, j, v)
+values	(1, 1, 30),
+	(2, 1, -10),
+	(3, 2, 10),
+	(3, 3, 50);
+
+insert into B (j, k, v)
+values	(2, 2, 2),
+	(2, 3, 4),
+	(3, 3, -1);
+
+甲1
+select A.i, B.k, Sum(A.v*B.v) as v
+from A, B
+where A.j = B.j
+Group by A.i, B.k
+Order by A.i, B.k;
+
+甲2
+select result.i, result.j as k, sum(result.v) as v
+from(select A.i, A.j, (IF(A.v, A.v, 0) + IF(tmp.v, tmp.v, 0)) as v
+from A NATURAL LEFT OUTER JOIN (select j as i, k as j, v from B) tmp
+UNION
+select tmp.i, tmp.j, (IF(A.v, A.v, 0) + IF(tmp.v, tmp.v, 0)) as v
+from A NATURAL RIGHT OUTER JOIN (select j as i, k as j, v from B) tmp
+) as result
+GROUP by result.i, result.j
+Order by result.i, result.j;
+
+
+
+==========================================================
+乙0
+
+CREATE TABLE Papper(
+	pid	int NOT NULL PRIMARY KEY,
+	title	varchar(25)
+);
+
+CREATE TABLE Reviewer(
+	rid	int NOT NULL PRIMARY KEY,
+	name	varchar(25)
+);
+
+CREATE TABLE Reviews(
+	rid	int NOT NULL,
+	pid	int NOT NULL,
+	PRIMARY KEY(rid, pid),
+	FOREIGN KEY(rid) REFERENCES Reviewer(rid),
+	FOREIGN KEY(pid) REFERENCES Papper(pid)
+);
+
+INSERT INTO Papper (pid,title)
+VALUES
+    ('1', 'hello'),
+    ('2', 'world'),
+    ('3', 'hello'),
+    ('4', 'good'),
+    ('5', 'papper');
+
+
+INSERT INTO Reviewer (rid,name)
+VALUES
+    ('1', 'John'),
+    ('2', 'Alice'),
+    ('3', 'Jerry'),
+    ('4', 'David'),
+    ('5', 'Alice'),
+    ('6', 'Bob');
+
+INSERT INTO Reviews (rid,pid)
+VALUES
+    ('1', '1'),
+    ('1', '2'),
+    ('1', '3'),
+    ('2', '1'),
+    ('2', '2'),
+    ('3', '3'),
+    ('4', '1'),
+    ('4', '3'),
+    ('5', '1'),
+    ('5', '3'),
+    ('5', '5');
+
+----------------------------------------------------------------------------------
+乙1
+-------------------------------ans-----------------------------------
+select p.title
+from Paper p
+where p.pid not in ( select p.pid
+		     from Paper p, Reviews re
+                     where p.pid = re.pid
+		     group by p.pid
+		     having count(*) >= 3);
+
+----error
+select p.title
+from Papper p, Reviewe re
+where p.pid = re.pid
+group by p.title
+having count(*) < 3;
+
+
+
+-----------------------------------------------------------------------------------
+乙2
+select r2.name
+from Reviewer r2
+where r2.rid not in(
+	select tmp.rid
+	from Reviewer r1 NATURAL LEFT OUTER JOIN (select re.rid, COUNT(*) as cnt
+		      from Reviews re, Reviewer r
+	              where re.rid = r.rid
+	              group by r.rid) as tmp
+	where   tmp.cnt != (select MAX(tmp2.cnt)	
+		 	   from 		(select count(*) as cnt 
+		      				 from Reviews re, Reviewer r
+	              		 		 where re.rid = r.rid
+	                         		 group by r.rid) as tmp2)
+);
+
+ select r2.name
+ from Reviewer r2
+ where r2.rid not in(
+ 	select r.rid
+ 	from Reviewe re, Reviewer r
+ 	where re.rid = r.rid
+ 	group by r.rid
+ 	having count(*) >= ALL(select COUNT(*)
+                 from Reviewe re, Reviewer r
+                 where re.rid = r.rid
+                 group by r.rid)
+ );
+
+----------------ans---------------------------
+select r.name
+from Reviews re, Reviewer r
+where re.rid = r.rid
+group by r.rid
+having count(*) >= ALL(select COUNT(*)
+                 from Reviews re, Reviewer r
+                 where re.rid = r.rid
+                 group by r.rid);
+
+=====================================================================================
+
+丙0.
+create table Occurs(
+	url	varchar(50) NOT NULL,
+	word	varchar(50) NOT NULL,
+	PRIMARY KEY(url, word)
+);
+
+create table Dictionary(
+	language varchar(30) NOT NULL,
+	word	 varchar(50) NOT NULL,
+	PRIMARY  KEY(language, word)
+);
+
+丙1.
+select	d.language
+from 	Dictionary d, Occurs oc
+where 	d.word = oc.word
+group by d.language
+having COUNT(distinct oc.url) > 3;
+
+丙2.
+select	tmp.url, tmp.language
+from 	(select	oc.url, d.language, COUNT(d.language) as cnt
+      	 from 	Dictionary d, Occurs oc
+     	 where 	d.word = oc.word
+    	 group by oc.url, d.language) as tmp
+where  tmp.cnt >= ALL(select tmp2.cnt
+		      from  (select	oc.url, d.language, COUNT(d.language) as cnt
+      	 		     from 	Dictionary d, Occurs oc
+     	 		     where 	d.word = oc.word
+	 		     group by oc.url, d.language) as tmp2
+		      where tmp2.url = tmp.url);
+
+select	tmp.url, Max(tmp.cnt)
+from 	(select	oc.url, d.language, COUNT(d.language) as cnt
+      	 from 	Dictionary d, Occurs oc
+     	 where 	d.word = oc.word
+    	 group by oc.url, d.language) as tmp
+group by tmp.url;
+
+丙3
+
+select	tot.url, lan_cnt.language
+from   	(select oc.url, count(oc.word) as total_word
+ 	 from Occurs oc
+ 	 group by oc.url) as tot, 
+	(select	oc.url, d.language, COUNT(d.language) as cnt
+      	 from 	Dictionary d, Occurs oc
+     	 where 	d.word = oc.word
+    	 group by oc.url, d.language) as lan_cnt
+where tot.url = lan_cnt.url and tot.total_word = lan_cnt.cnt;
+
+==========================================================================
+丁0
+create table Engineer(
+	engineerID	int	PRIMARY KEY NOT NULL,
+	lname		varchar(15) NOT NULL,
+	fname		varchar(15) NOT NULL,
+	jobtitle	varchar(25) NOT NULL,
+	email		varchar(30) NOT NULL,
+	proEngineerExamTitle	varchar(30),
+	proEngineerExamPassDate date,
+	salary		int	     NOT NULL,
+	vacationDaysAccumulated int	NOT NULL
+);
+create table Project(
+	projectID	int		NOT NULL	PRIMARY KEY,
+	name		varchar(30)	NOT NULL,
+	startDate	date		NOT NULL,
+	endDate		date		NOT NULL,
+	customerID	int		NOT NULL,
+	monthlyBudget	int		NOT NULL,
+	totalBidget	int 		NOT NULL,
+	managerID	int		NOT NULL,
+	Foreign key(customerID) References customer(customerID),
+	Foreign key(managerID) References Engineer(EngineerID)
+);
+
+create table ProjectEngineers(
+	projectID	int	not null,
+	engineerID	int	not null,
+	hoursPerWeek	int	not null,
+	foreign key(projectID) references project(projectID),
+	foreign key(engineerID) references engineer(engineerID),
+	primary key(projectID, EngineerID)
+);
+
+create table Customer(
+	customerID	int		not null	primary key,
+	name		varchar(30)	not null,
+	address		varchar(50)	not null,
+	phone		varchar(10)	not null,
+	contactName	varchar(30)	not null,
+	contactPhone	varchar(10)	not null
+);
+
+create table WorkingGroup(
+	workgroupID	int		not null	primary key,
+	workGroupTitle	varchar(30)	not null,
+	workingOnStandard int		not null,
+	sponsorOrgName 	varchar(30)	not null,
+	startDate 	date		not null,
+	endDate		date,
+	annualBudget 	int		not null
+);
+
+constraint need_to_be_start_before_end
+	check(startDate <= endDate)
+
+constraint start_before_end
+	check(startDate <= endDate)
+
+create table WorkingGroupMembers(
+	workgroupID	 int	not null,
+	engineerID	 int	not null, 
+	startDate	 date	not null,
+	endDate		 date,
+	role		 varchar(30) not null,
+	foreign key(engineerID) references Engineer(engineerID),
+	primary key(workgroupID, engineerID)
+);
+
+create table Standards(
+	standardsID	int		not null primary key,
+	standardTitle	varchar(50) 	not null,
+	status	 	varchar(30)	not null, 
+	approvalDate	date,
+	replacesOldStandard int,
+	price		int		not null,
+);
+
+丁1.
+select AVG(wg.annualBudget) as average
+from WorkingGroup wg;
+
+丁2.
+select e.lname, e.fname, wgm.startdate
+from Engineer e, WorkingGroupMembers wgm
+where wgm.role = "Treasurer" and e.engineerID = wgm.engineerID;
+
+丁3.
+select st.standardTitle, st.status
+from Standards st
+where st.approvalDate < '1960-1-1';
+
+丁4.
+select st.standardTitle, st.standardsID, st.price
+from Standards st
+where st.standardTitle like "%802.11a%" or st.standardTitle like "ANSI_%";
+
+丁5.
+select c.name, c.address
+from customer c, project p
+where p.monthlyBudget > 50000 and c.customerID = p.customerID;
+
+丁6.
+select sponsorOrgName, COUNT(workGroupID) as number_of_sponsor
+from workingGroup
+group by sponsorOrgName;
+
+丁7.
+select st.standardTitle, st.standardsID, st.price
+from Standards st
+where st.price >= ALL(select st.price
+		      from Standards st);
+
+丁8.
+select 	e.engineerID, e.lname, wg.workgroupID, wg.workGroupTitle
+from 	Engineer e, WorkingGroup wg, WorkingGroupMembers wgm
+where 	e.EngineerID = wgm.EngineerId and wg.workgroupID = wgm.workgroupID
+	and e.proEngineerExamTitle = "PE Mechanical"
+Order by wg.workgroupTitle;
+
+丁9.
+select 	wg1.workgroupID as chair_id, wgm1.role as chair_role,
+       	wg2.workgroupID as Treasurer_id, wg2.role as Treasurer_role,
+       	wgm.engineerID
+from 	WorkingGroup wg1, WorkingGroupMembers wgm1,
+     	WorkingGroup wg2, WorkingGroupMembers wgm2
+where 	wg1.workgroupID != wg2.workgroupID and wgm1.engineerID = wgm2.engineerID
+	and wg1.role = "Chair" and wg2.role = "Treasurer"
+	and wg1.projectID = wgm1.projectID and wg2.projectID = wgm2.projectID;
+
+select 	wgm1.engineerID, wgm1.workgroupID as group1,
+       	wgm2.workgroupID as group2
+from 	WorkingGroupMembers wgm1, WorkingGroupMembers wgm2
+where 	wgm1.workgroupID <= wgm2.workgroupID and wgm1.engineerID = wgm2.engineerID
+	and wgm1.role != wgm2.role;
+
+丁10.
+select 	p.projectID, p.name, count(pe.engineerID), avg(pe.hoursPerWeek)
+from 	Project p NATURAL LEFT OUTER JOIN ProjectEngineers pe
+group by p.projectID;
+
+丁11.
+select 	wg.workgroupID, wg.workgroupTitle,
+	count(*) as number_of_engineer,
+	max(wgm.startDate) as last_member_join_time
+from 	workingGroup wg, WorkingGroupMembers wgm
+where	wg.workGroupID = wgm.workGroupID
+group by wg.workgroupID
+having count(*) > 5;
+
+丁12.
+select  e.lname, e.fname, wg.workGroupID, wg.workGroupTitle,
+      	st.standardsID, st.standardTitle
+from   	Engineer e, WorkingGroup wg,
+     	WorkingGroupMembers wgm, Standards st
+where  	e.engineerID = wgm.engineerID and wg.workgroupID = wgm.workgroupID
+	and wg.sponsorOrgName = "IEEE" and st.standardsID = wg.workingOnStandard
+order by st.standardTitle;
+	
+

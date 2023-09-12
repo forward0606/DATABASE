@@ -1,0 +1,17 @@
+﻿Product,,,,PC,,,,,,Laptop,,,,,,,Printer,,,,,Manufacturer
+maker,model,type,,model,speed,ram,hd,price,,model,speed,ram,hd,screen,price,,model,color,type,price,,maker
+Apple,a2255,pc,,a2255,3.0 ,16GB,1TB,25000,,b7711,3.2,16GB,1TB,16,65000,,v1122,black,solid ink,10000,,Apple
+Apple,a2233,pc,,a2233,4.2,16GB,1TB,30000,,b7722,1.1,16GB,1TB,16,50000,,v1133,red,3D,80000,,Acer
+Acer,a2234,pc,,a2234,2.4,16GB,512GB,20000,,b7733,1.9,32GB,2TB,18,60000,,v1144,yellow,multifunction,80000,,ASUS
+Acer,a2236,pc,,a2236,5.9,32GB,2TB,40000,,b7744,7.9,32GB,4TB,18,100000,,v1155,blue,printer,40000,,LG
+ASUS,a2237,pc,,a2237,7.8,32GB,4TB,60000,,b7755,4.5,32GB,4TB,24,80000,,v1166,white,LED,30000,,Microsoft
+Apple,b7711,laptop,,,,,,,,,,,,,,,,,,,,
+Apple,b7722,laptop,,,,,,,,,,,,,,,,,,,,
+Acer,b7733,laptop,,,,,,,,,,,,,,,,,,,,
+Acer,b7744,laptop,,,,,,,,,,,,,,,,,,,,
+LG,b7755,laptop,,,,,,,,,,,,,,,,,,,,
+LG,v1122,printer,,,,,,,,,,,,,,,,,,,,
+ASUS,v1133,printer,,,,,,,,,,,,,,,,,,,,
+Microsoft,v1144,printer,,,,,,,,,,,,,,,,,,,,
+Microsoft,v1155,printer,,,,,,,,,,,,,,,,,,,,
+Microsoft,v1166,printer,,,,,,,,,,,,,,,,,,,,
